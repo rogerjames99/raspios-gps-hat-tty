@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="tty", KERNEL=="ttyS0", RUN+="/home/pi/gnss/gnss", SYMLINK+="gps%n", TAG+="systemd", ENV{SYSTEMD_WANTS}="gpsdctl@%k.service"

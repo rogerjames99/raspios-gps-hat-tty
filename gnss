@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Script to be called by udev RUN
+
+gpioset -m time -s 3 0 4=0
+echo "at" >/dev/ttyS0
+sleep 2
+echo "at+cgnspwr=1" >/dev/ttyS0
+sleep 2
+echo "at+cgnstst=1" >/dev/ttyS0
