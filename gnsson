@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+function sendcommand
+{
+  printf "at+cgns$1\r" >&99
+  sleep 1
+  read answer <&99 # Discard the echo
+  read answer <&99 # Read the return
+} <>/dev/ttyS0
+
+
+#echo "at+cgnspwr=1" >/dev/ttyS0
+#sleep 2
+#echo "at+cgnspwr?" >/dev/ttyS0
+
+sendcommand "pwr=1"
