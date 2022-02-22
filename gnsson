@@ -2,20 +2,19 @@
 
 function sendcommand
 {
+  # Flush any input
+  read -u4 -t1
   printf "at+cgns$1\r" >&4
-  read -t10 echoed <&4
-  read -t10 answer1 <&4
-  read -t10 answer2 <&4
-  read -t10 answer3 <&4
-  read -t10 answer4 <&4
-} <>/dev/ttyS0
+  read -u4 -t10 answer1
+  read -u4 -t10 answer2
+  read -u4 -t10 answer3
+  read -u4 -t10 answer4
+}
 
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
 sendcommand "pwr=1"
-echo "echoed"
-xxd <<< "$echoed"
 echo "answer1"
 xxd <<< "$answer1"
 echo "answer2"
