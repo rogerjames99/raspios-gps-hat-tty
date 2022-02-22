@@ -9,12 +9,12 @@ function flush_input
   done
 }
 
-discard_echo
+function discard_echo
 {
   read -u4 -t10 # Discard the echo
 }
 
-read_response
+function read_response
 {
   sleep 1
   read -u4 -N2 -t10 response
@@ -23,7 +23,7 @@ read_response
 function sendcommand
 {
   # Flush any input
-  flush-input
+  flush_input
   while read -u4 -t0
   do
     read -u4
