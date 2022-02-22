@@ -2,15 +2,27 @@
 
 function sendcommand
 {
-  printf "at+cgns$1\r" >&99
-  sleep 1
-  read answer <&99 # Discard the echo
-  read answer <&99 # Read the return
+  printf "at+cgns$1\r" >&4
+  read -t10 echoed <&4
+  read -t10 answer1 <&4
+  read -t10 answer2 <&4
+  read -t10 answer3 <&4
+  read -t10 answer4 <&4
 } <>/dev/ttyS0
 
-
-#echo "at+cgnspwr=1" >/dev/ttyS0
-#sleep 2
-#echo "at+cgnspwr?" >/dev/ttyS0
+exec 4<>/dev/ttyS0
+stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
 sendcommand "pwr=1"
+echo "echoed"
+xxd <<< "$echoed"
+echo "answer1"
+xxd <<< "$answer1"
+echo "answer2"
+xxd <<< "$answer2"
+echo "answer3"
+xxd <<< "$answer3"
+echo "answer4"
+xxd <<< "$answer4"
+
+exec 4>&-
