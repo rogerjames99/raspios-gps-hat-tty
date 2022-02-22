@@ -1,10 +1,55 @@
 #!/usr/bin/env bash
-
 # Script to be called by udev RUN
 
-gpioset -m time -s 3 0 4=0
-echo "at" >/dev/ttyS0
-sleep 2
-echo "at+cgnspwr=1" >/dev/ttyS0
-sleep 2
-echo "at+cgnstst=1" >/dev/ttyS0
+function flush_input
+{
+  # Flush any input
+  while read -u4 -t0
+  do
+    read -u4
+  done
+}
+
+discard_echo
+{
+  read -u4 -t10 # Discard the echo
+}
+
+read_response
+{
+  sleep 1
+  read -u4 -N2 -t10 response
+}
+
+function sendcommand
+{
+  # Flush any input
+  flush-input
+  while read -u4 -t0
+  do
+    read -u4
+  done
+  printf "at+cgns$1\r" >&4
+  discard_echo
+  read_response
+}
+
+exec 4<>/dev/ttyS0
+stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
+
+# Test if hat is powered
+flush_input
+printf "at\r" >&4
+discard_echo
+read_response
+
+if [ $response != "OK" ]; then
+  gpioset -m time -s 3 0 4=0
+fi
+
+sendcommand "pwr=1"
+if [ $response != "OK" ]; then
+  exit -1
+fi
+
+exec 4>&-

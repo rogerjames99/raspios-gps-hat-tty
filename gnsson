@@ -1,27 +1,42 @@
 #!/usr/bin/env bash
 
+function flush_input
+{
+  # Flush any input
+  while read -u4 -t0
+  do
+    read -u4
+  done
+}
+
+discard_echo
+{
+  read -u4 -t10 # Discard the echo
+}
+
+read_response
+{
+  sleep 1
+  read -u4 -N2 -t10 response
+}
+
 function sendcommand
 {
   # Flush any input
-  read -u4 -t1
+  flush-input
+  while read -u4 -t0
+  do
+    read -u4
+  done
   printf "at+cgns$1\r" >&4
-  read -u4 -t10 answer1
-  read -u4 -t10 answer2
-  read -u4 -t10 answer3
-  read -u4 -t10 answer4
+  discard_echo
+  read_response
 }
 
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
 sendcommand "pwr=1"
-echo "answer1"
-xxd <<< "$answer1"
-echo "answer2"
-xxd <<< "$answer2"
-echo "answer3"
-xxd <<< "$answer3"
-echo "answer4"
-xxd <<< "$answer4"
+echo $response
 
 exec 4>&-
