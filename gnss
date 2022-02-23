@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 # Script to be called by udev RUN
+# This script assumes that the sim868 module NVRAM
+# is configured to a fixed baud rate of 115200
+# and not to echo commands.
+# This can be done by conenecting a terminal emulator
+# such as minicom to the serial port and issuing the following commands
+# at&ipr=115200
+# ate0
+# at&w
+# Note that the final command will not be echoed.
 
 function flush_input
 {
@@ -8,11 +17,6 @@ function flush_input
   do
     read -u4
   done
-}
-
-function discard_echo
-{
-  read -u4 -t10 # Discard the echo
 }
 
 function read_response
@@ -30,7 +34,6 @@ function sendcommand
     read -u4
   done
   printf "at+cgns$1\r" >&4
-  discard_echo
   read_response
 }
 
@@ -38,17 +41,17 @@ exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
 # Test if hat is powered
-flush_input
-printf "at\r" >&4
-discard_echo
-read_response
-
-if [ $response != "OK" ]; then
-  gpioset -m time -s 3 0 4=0
-fi
+until [ "$response" = "OK" ]; do
+  flush_input
+  printf "at\r" >&4
+  read_response
+  if [ "$response" != "OK" ]; then
+    gpioset -m time -s 3 0 4=0
+  fi
+done
 
 sendcommand "pwr=1"
-if [ $response != "OK" ]; then
+if [ "$response" != "OK" ]; then
   exit -1
 fi
 

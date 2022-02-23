@@ -9,11 +9,6 @@ function flush_input
   done
 }
 
-function discard_echo
-{
-  read -u4 -t10 # Discard the echo
-}
-
 function read_response
 {
   sleep 1
@@ -29,7 +24,6 @@ function sendcommand
     read -u4
   done
   printf "at+cgns$1\r" >&4
-  discard_echo
   read_response
 }
 
