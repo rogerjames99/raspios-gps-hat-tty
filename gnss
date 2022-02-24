@@ -13,46 +13,63 @@
 function flush_input
 {
   # Flush any input
+  printf "Flushing input\n"
   while read -u4 -t0
   do
-    read -u4
+    printf "Discarding\n"
+    read -u4 discard
+    xxd <<< $discard
   done
+  printf "Flushed\n"
 }
 
 function read_response
 {
+  printf "Read response %d\n" $1
   sleep 1
-  read -u4 -N2 -t10 response
+  read -u4 -t $1 response
+  xxd <<< $response
 }
 
 function sendcommand
 {
+  printf "sendcommand - %s" 
   # Flush any input
   flush_input
-  while read -u4 -t0
-  do
-    read -u4
-  done
   printf "at+cgns$1\r" >&4
-  read_response
 }
 
 exec 4<>/dev/ttyS0
-stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
+stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo igncr
 
 # Test if hat is powered
+flush_input
+printf "at\r" >&4
+read_response 2
+if [ "$response" != "OK" ]; then
+  printf "Pulling down gpio4\n"
+  gpioset -m time -s 3 0 4=0
+  # Wait for RDY
+  until [ "$response" = "RDY" ]; do
+    read_response 1
+    printf "Got response -%s-\n" $response
+  done
+fi
+
+# Hat is powered
+# Turn on gps
+sendcommand "pwr=1"
 until [ "$response" = "OK" ]; do
-  flush_input
-  printf "at\r" >&4
-  read_response
-  if [ "$response" != "OK" ]; then
-    gpioset -m time -s 3 0 4=0
-  fi
+  read_response 1
 done
 
-sendcommand "pwr=1"
-if [ "$response" != "OK" ]; then
-  exit -1
-fi
+# Turn on test mode
+response=
+sendcommand "tst=1"
+until [ "$response" = "OK" ]; do
+  read_response 1
+done
+
+printf "Success\n"
 
 exec 4>&-

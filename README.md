@@ -34,8 +34,23 @@ Use raspi-config to :-
 Install the required packages using apt-get
 
 ```
-apt-get install git gpsd-tools gpiod
+apt-get install git gpsd-tools gpiod minicom
 ```
+
+## Set up the SIM868 module
+
+```
+minicom -s
+```
+
+In the minicom configuration menu scroll down to "Serial port setup" and press return to select it. In the serial port setup menu change the serial device to "/dev/ttyS0",  make sure the hardware and software flow control options are set to "No", and set the Bps/Par/bits to "115200 8N1" . Press return to go back the the configuration menu.  Scroll to "Save setup as dfl" and select this option.  Select the "Exit" option this will take you into the the minicom terminal screen.  Press "at" followed by return. Repeat this until you see an "OK" response. At this point the SIM868 will have setup the correct baud rate and framing. Issue the following commands to the SIM868 module.
+
+```
+ate0
+at&w
+```
+
+The first first command turns off the echoing of commands. The second writes the current configuration to NVRAM.
 
 ## Clone this git repo
 
