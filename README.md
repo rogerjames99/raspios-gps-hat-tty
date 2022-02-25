@@ -1,7 +1,3 @@
-# WORK IN PROGRESS
-
-This not quite ready for release yet. Currently the set up is working but as soon as gpsd runs it stops the hat logging fixes.
-
 # raspios-gps-hat-tty
 
 Instructions and examples of setting up gpsd with a gps hat connected via the gpio serial port.
@@ -34,7 +30,7 @@ Use raspi-config to :-
 Install the required packages using apt-get
 
 ```
-apt-get install git gpsd-tools gpiod minicom
+apt-get install git gpsd gpsd-tools gpsd-clients gpiod minicom
 ```
 
 ## Set up the SIM868 module
@@ -59,3 +55,8 @@ git clone https://github.com/rogerjames99/raspios-gps-hat-tty
 cd raspios-gps-hat-tty
 ```
 
+## Set up the udev rules
+
+```
+sudo cp 98-gnss.rules /etc/udev/rules.d
+```
