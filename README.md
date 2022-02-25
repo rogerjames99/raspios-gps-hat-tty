@@ -2,7 +2,7 @@
 
 Instructions and examples of setting up gpsd with a gps hat connected via the gpio serial port.
 
-The hat I used for this example is the Waveshare GSM/GPRS/GNSS hat mounted on a Pi Zero W. The aim is to to initialise the hat and when the Pi is booted and automatically start a gpsd instance to capture messages from the serial port normally present at gpio header pins 8 (TX) and 10(RX). I do this using a udev rule and a script. You will find the rule in the file 98-gnss.rules and the script in the file gnss in this repository.
+The hat I used for this example is the Waveshare GSM/GPRS/GNSS hat mounted on a Pi Zero W. The aim is to to initialise the hat when the Pi is booted and automatically start a gpsd instance to capture messages from the serial port normally present at gpio header pins 8 (TX) and 10(RX). I do this using a udev rule and a script. You will find the rule in the file 98-gnss.rules and the script in the file gnss in this repository.
 
 The Waveshare hat uses the SIMCOM SIM868 module to provide GPS/GPRS/GNSS services.
 
