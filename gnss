@@ -26,26 +26,37 @@ function flush_input
 function read_response
 {
   printf "Read response %d\n" $1
-  sleep 1
   read -u4 -t $1 response
   xxd <<< $response
 }
 
 function sendcommand
 {
-  printf "sendcommand - %s" 
+  printf "sendcommand - %s"
   # Flush any input
   flush_input
   printf "at+cgns$1\r" >&4
 }
 
+printf "Opening /dev/ttyS0\n"
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo igncr
+# Allow a little time for stabilisation.
+sleep 2
 
-# Test if hat is powered
-flush_input
+# Test if module is powered
+printf "Sending at\n"
 printf "at\r" >&4
-read_response 2
+if read -u4 -t2 response; then
+  # Read has found something
+  if [ -n $response ]; then
+    until [ "$response" = "OK" ]; do
+      printf "Waiting for OK\n"
+      read_response 1
+    done
+  fi
+fi
+
 if [ "$response" != "OK" ]; then
   printf "Pulling down gpio4\n"
   gpioset -m time -s 3 0 4=0
