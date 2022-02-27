@@ -13,7 +13,7 @@ def getPositionData(gps):
         latitude = getattr(nx,'lat', "Unknown")
         longitude = getattr(nx,'lon', "Unknown")
         elevation = getattr(nx, 'altHAE', "Unknown")
-        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, elevation))
+        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
 
 
 gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
@@ -29,9 +29,9 @@ try:
     while running:
         getPositionData(gpsd)
         time.sleep(1.0)
-    with open("output.gpx", "w") as f:
-        f.write( gpx.to_xml())
-    print "Track saved"
 
 except (KeyboardInterrupt):
     running = False
+    with open("output.gpx", "w") as f:
+        f.write( gpx.to_xml())
+    print("Track saved")
