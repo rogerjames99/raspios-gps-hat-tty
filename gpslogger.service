@@ -1,0 +1,14 @@
+[Unit]
+Description=GPS logger
+Requires=gpsdctl@ttyS0.service
+After=gpsdctl@ttyS0.service
+
+[Service]
+Type=simple
+# Modify this path to suit your system
+ExecStart=/home/roger/raspios-gps-hat-tty/python/logger
+Restart=on-failure
+
+
+[Install]
+RequiredBy=multi-user.target
