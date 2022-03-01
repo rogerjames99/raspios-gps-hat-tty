@@ -5,6 +5,14 @@ import time
 import gpxpy
 import gpxpy.gpx
 from datetime import datetime
+import logging
+#from systemd.journal import JournalHandler
+
+logging.basicConfig(format='%(asctime)s %(message)s')
+log = logging.getLogger("gps-logger")
+#log.addHandler(JournaldLogHandler())
+log.addHandler(logging.FileHandler("gps-logger.log"))
+log.setLevel(logging.DEBUG)
 
 TIME_INTERVAL_SECONDS = 30.0
 MAX_SEGMENT_TIME = 900.0
@@ -14,12 +22,16 @@ def saveCurrentSegment():
     with open(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.gpx"), "w") as f:
         f.write(gpx.to_xml())
     gpx_segment.points.clear()
-    print("Segment saved")
+    log.info("Segment saved")
 
 def getPositionData(gps):
     while True:
-        nx = gpsd.next()
-        print("Class = ", nx['class'])
+        try:
+            nx = gpsd.next()
+        except ConnectionError:
+            log.info("ConnectionError")
+            continue
+        log.info("Class = %s", nx['class'])
         if nx['class'] == 'TPV':
             latitude = getattr(nx,'lat', "Unknown")
             longitude = getattr(nx,'lon', "Unknown")
@@ -27,7 +39,7 @@ def getPositionData(gps):
             gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
             # If the number of points saved multiplied by the time interval is greater
             # than the maximum segment size then save the current segment and reset it.
-            print("Current points", len(gpx_segment.points))
+            log.info("Current points %d", len(gpx_segment.points))
             if (len(gpx_segment.points) * TIME_INTERVAL_SECONDS) > MAX_SEGMENT_TIME:
                 saveCurrentSegment()
             return
@@ -44,9 +56,9 @@ gpx_track.segments.append(gpx_segment)
 
 try:
     while running:
-        print("Tick")
+        log.info("Tick")
         getPositionData(gpsd)
-        print("Tock");
+        log.info("Tock");
         time.sleep(TIME_INTERVAL_SECONDS)
 
 except (KeyboardInterrupt):
