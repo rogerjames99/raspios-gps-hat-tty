@@ -5,7 +5,9 @@ After=gpsdctl@ttyS0.service
 
 [Service]
 Type=simple
-# Modify this path to suit your system
+# Modify User and ExecStart as required
+User=roger
+WorkingDirectory=~
 ExecStart=/home/roger/raspios-gps-hat-tty/logger
 Restart=on-failure
 
