@@ -10,7 +10,7 @@ from systemd.journal import JournalHandler
 
 logging.basicConfig(format='%(asctime)s %(message)s')
 log = logging.getLogger("gps-logger")
-log.propogate = False
+log.propagate = False
 log.addHandler(JournalHandler())
 #log.addHandler(logging.FileHandler("gps-logger.log"))
 log.setLevel(logging.DEBUG)
