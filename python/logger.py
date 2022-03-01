@@ -15,16 +15,22 @@ def saveCurrentSegment():
     print("Segment saved")
 
 def getPositionData(gps):
-    nx = gpsd.next()
-    if nx['class'] == 'TPV':
-        latitude = getattr(nx,'lat', "Unknown")
-        longitude = getattr(nx,'lon', "Unknown")
-        elevation = getattr(nx, 'altHAE', "Unknown")
-        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
-        # If the number of points saved multiplied by the time interval is greater
-        # than the maximum segment size then save the current segment and reset it.
-        if (gpx_segment.points.count * TIME_INTERVAL_SECONDS) > MAX_SEGMENT_TIME:
-            saveCurrentSegment()
+    while True:
+        nx = gpsd.next()
+        print("Class = ", nx['class'])
+        if nx['class'] == 'TPV':
+            latitude = getattr(nx,'lat', "Unknown")
+            longitude = getattr(nx,'lon', "Unknown")
+            elevation = getattr(nx, 'altHAE', "Unknown")
+            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
+            # If the number of points saved multiplied by the time interval is greater
+            # than the maximum segment size then save the current segment and reset it.
+            print("Current points", len(gpx_segment.points))
+            if (len(gpx_segment.points) * TIME_INTERVAL_SECONDS) > MAX_SEGMENT_TIME:
+                saveCurrentSegment()
+            return
+        else:
+            continue
 
 gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
 
@@ -36,7 +42,9 @@ gpx_track.segments.append(gpx_segment)
 
 try:
     while running:
+        print("Tick")
         getPositionData(gpsd)
+        print("Tock");
         time.sleep(TIME_INTERVAL_SECONDS)
 
 except (KeyboardInterrupt):
