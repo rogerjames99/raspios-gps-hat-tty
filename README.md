@@ -30,7 +30,7 @@ Use raspi-config to :-
 Install the required packages using apt-get
 
 ```
-apt-get install git gpsd gpsd-tools gpsd-clients gpiod minicom
+apt-get install git gpsd gpsd-tools python3-gps gpiod minicom
 ```
 
 ## Set up the SIM868 module
@@ -60,3 +60,14 @@ cd raspios-gps-hat-tty
 ```
 sudo cp 98-gnss.rules /etc/udev/rules.d
 ```
+
+## Set up gpslogger service
+
+There is python3 script called logger in the the repo. You can set this up to run at boot. By installing the systemd service file for it as follows.
+
+```
+sudo cp gpslogger.service /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl enable gpslogger
+```
+
