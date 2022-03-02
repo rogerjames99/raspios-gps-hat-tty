@@ -1,0 +1,12 @@
+[Unit]
+Description=GPIO21 shutdown monitor
+
+[Service]
+Type=simple
+# Modify User and ExecStart as required
+User=roger
+WorkingDirectory=~
+ExecStart=/home/roger/raspios-gps-hat-tty/powerswitch
+
+[Install]
+RequiredBy=multi-user.target
