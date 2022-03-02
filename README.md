@@ -63,11 +63,22 @@ sudo cp 98-gnss.rules /etc/udev/rules.d
 
 ## Set up gpslogger service
 
-There is python3 script called logger in the the repo. You can set this up to run at boot. By installing the systemd service file for it as follows.
+There is python3 script called logger in the the repo. You can set this up to run at boot by installing the systemd service file for it as follows.
 
 ```
 sudo cp gpslogger.service /etc/systemd/system
 sudo systemctl daemon-reload
 sudo systemctl enable gpslogger
+```
+
+## Set up the powerswitch service
+
+There a shell script called powerswitch in the repo. This monitors GPIO21 for a falling edge and gracefully powers of the Pi when one is detected. GPIO21 is on pin 40 of the 40 pin header and pin 39 is a ground. As both these pins are on same end of the 40 pin header it makes it very easy to power off the pi by shorting them together.  The script needs gpiomon program to be installed.
+
+```
+sudo apt-get install gpiod
+sudo cp powerswitch.service /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl enable powerswitch
 ```
 
