@@ -19,7 +19,7 @@ MAX_SEGMENT_TIME = 900.0
 running = True
 
 def saveCurrentSegment():
-    gpx.reduce_points(None, 2.5)
+    gpx.reduce_points(min_distance=2.5)
     with open(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.gpx"), "w") as f:
         f.write(gpx.to_xml())
     gpx_segment.points.clear()
