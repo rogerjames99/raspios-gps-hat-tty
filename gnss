@@ -67,20 +67,4 @@ if [ "$response" != "OK" ]; then
   done
 fi
 
-# Hat is powered
-# Turn on gps
-sendcommand "pwr=1"
-until [ "$response" = "OK" ]; do
-  read_response 1
-done
-
-# Turn on test mode
-response=
-sendcommand "tst=1"
-until [ "$response" = "OK" ]; do
-  read_response 1
-done
-
-printf "Success\n"
-
 exec 4>&-
