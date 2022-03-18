@@ -18,42 +18,34 @@ TIME_INTERVAL_SECONDS = 30.0
 MAX_SEGMENT_TIME = 900.0
 running = True
 
-def getPositionData(gps):
-    while True:
-        try:
-            nx = gpsd.next()
-        except ConnectionError:
-            log.debug("ConnectionError")
-            continue
-        cls = nx['class']
-        log.debug("Class = %s", cls)
-        if cls != 'TPV':
-            continue
-        mode = nx['mode']
-        log.debug("Mode = %s", mode)
-        exit()
-
-        latitude = float(nx['lat'])
-        longitude = float(nx['lon'])
-        log.debug("Latitude %f Longitude %f", lat, lon)
-        if mode == 3:
-            elevation = float(getattr(nx, 'altHAE'))
-            log.debug("Elevation %f", elevation)
-            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
-        else:
-            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude))
-        # If the number of points saved multiplied by the time interval is greater
-        # than the maximum segment size then save the current segment and reset it.
-        log.debug("Current points %d", len(gpx_segment.points))
-        if (len(gpx_segment.points) * TIME_INTERVAL_SECONDS) > MAX_SEGMENT_TIME:
-            saveCurrentSegment()
+def getPositionData(report):
+    print(report)
+    mode = report['mode']
+    if mode < 2:
         return
+    log.debug("Mode = %d", mode)
+
+    latitude = float(report['lat'])
+    longitude = float(report['lon'])
+    log.debug("Latitude %f Longitude %f", latitude, longitude)
+    if mode == 3:
+        elevation = float(report['altHAE'])
+        log.debug("Elevation %f", elevation)
+        #gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
+    #else:
+        #gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude))
+    # If the number of points saved multiplied by the time interval is greater
+    # than the maximum segment size then save the current segment and reset it.
+    #log.debug("Current points %d", len(gpx_segment.points))
+    #if (len(gpx_segment.points) * TIME_INTERVAL_SECONDS) > MAX_SEGMENT_TIME:
+        #saveCurrentSegment()
 
 
-log.info("Gps logger started")
-//gpsd = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
-session = gps(**opts)
+session = gps()
 session.stream(WATCH_ENABLE|WATCH_NEWSTYLE)
+log.info("Gps logger started")
 
 for report in session:
-    print report
+    if report['class'] != 'TPV':
+        continue
+    getPositionData(report)
