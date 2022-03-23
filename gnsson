@@ -30,7 +30,14 @@ function sendcommand
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
-sendcommand "pwr=1"
+case $1 in
+  0 )
+    sendcommand "pwr=0" ;;
+  1 )
+    sendcommand "pwr=1" ;;
+  * )
+    echo "Bad argument"; exit -1 ;;
+esac
 echo $response
 
 exec 4>&-
