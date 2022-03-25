@@ -30,14 +30,6 @@ function read_response
   xxd <<< $response
 }
 
-function sendcommand
-{
-  printf "sendcommand - %s"
-  # Flush any input
-  flush_input
-  printf "at+cgns$1\r" >&4
-}
-
 printf "Opening /dev/ttyS0\n"
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo igncr

@@ -5,39 +5,35 @@ function flush_input
   # Flush any input
   while read -u4 -t0
   do
-    read -u4
+    read -u4 discard
+    echo "Discarding"|systemd-cat -t gnssonoff -p info
+    xxd <<< $discard|systemd-cat -t gnssonoff -p info
   done
-}
-
-function read_response
-{
-  sleep 1
-  read -u4 -N2 -t10 response
 }
 
 function sendcommand
 {
   # Flush any input
   flush_input
-  while read -u4 -t0
-  do
-    read -u4
-  done
-  printf "at+cgns$1\r" >&4
-  read_response
+  command="at+cgns$1\r"
+  echo "Command $command"|systemd-cat -t gnssonoff -p info
+  printf $command >&4
+  sleep 1
 }
 
+echo "gnssonoff $1"|systemd-cat -t gnssonoff -p info
 exec 4<>/dev/ttyS0
 stty -F /dev/ttyS0 115200 cs8 -cstopb raw -echo
 
 case $1 in
   0 )
-    sendcommand "tst=0" ;;
+    sendcommand "tst=0"
+    sendcommand "pwr=0" ;;
   1 )
+    sendcommand "pwr=1"
     sendcommand "tst=1" ;;
   * )
-    echo "Bad argument"; exit -1 ;;
+    echo "Bad argument"|systemd-cat -t gnssonoff -p warning; exit -1 ;;
 esac
-echo $response
 
 exec 4>&-
