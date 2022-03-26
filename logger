@@ -70,7 +70,8 @@ try:
         # Release the session
         session.close()
         time.sleep(TIME_INTERVAL_SECONDS)
-        session = gps(mode=WATCH_ENABLE,host="192.168.10.22")
+        #session = gps(mode=WATCH_ENABLE,host="192.168.10.22")
+        session = gps(mode=WATCH_ENABLE)
 except StopIteration:
     pass
 except KeyboardInterrupt:
