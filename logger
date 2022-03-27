@@ -34,15 +34,14 @@ def getPositionData(report):
         return
     log.debug("Mode = %d", mode)
 
-    latitude = float(report['lat'])
-    longitude = float(report['lon'])
-    log.debug("Latitude %f Longitude %f", latitude, longitude)
+    point = gpxpy.gpx.GPXTrackPoint()
+    point.latitude = float(report['lat'])
+    point.longitude = float(report['lon'])
     if mode == 3:
-        elevation = float(report['altHAE'])
-        log.debug("Elevation %f", elevation)
-        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude, elevation))
-    else:
-        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(latitude, longitude))
+        point.elevation = float(report['altHAE'])
+
+    log.debug("Point %s", point)
+    gpx_segment.points.append(point)
     # If the number of points saved multiplied by the time interval is greater
     # than the maximum segment size then save the current segment and reset it.
     log.debug("Current points %d", len(gpx_segment.points))
