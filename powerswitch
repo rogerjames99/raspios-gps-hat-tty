@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
-gpiomon -n1 -f 0 21
+# GPIO settings are reset when the chardev is closed so it is safest to specify them explicitly.
+# 
+gpiomon  -B pull-up -n1 -f 0 21
 sudo poweroff
+#
+# System restart is achieved by pulling down pin 5 on the GPIO header (GPIO3/I2C1_SCL).
+# This only works when the pi is in a halt state and power is still being applied via the 5V rail (USB).

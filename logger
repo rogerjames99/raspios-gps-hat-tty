@@ -62,15 +62,18 @@ session = gps(mode=WATCH_ENABLE)
 try:
     while True:
         report = session.next()
-        if report['class'] != 'TPV':
-            continue
-        # Got a TPV
-        getPositionData(report)
-        # Release the session
-        session.close()
-        time.sleep(TIME_INTERVAL_SECONDS)
-        #session = gps(mode=WATCH_ENABLE,host="192.168.10.22")
-        session = gps(mode=WATCH_ENABLE)
+        report_class = report['class']
+        if report_class == 'TPV':
+            # Got a TPV
+            getPositionData(report)
+            # Release the session
+            #session.close()
+            #time.sleep(TIME_INTERVAL_SECONDS)
+            #session = gps(mode=WATCH_ENABLE,host="192.168.10.22")
+            #session = gps(mode=WATCH_ENABLE)
+        elif report_class == "SKY":
+            # Update the DOP data
+            print(report)
 except StopIteration:
     pass
 except KeyboardInterrupt:
