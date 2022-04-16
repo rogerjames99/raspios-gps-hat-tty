@@ -19,11 +19,10 @@ running = True
 
 last_time = datetime.now()
 
-def saveCurrentSegment():
+def saveCurrentSegment(segfile):
     log.debug("Saving segment raw points %d", gpx_segment.get_points_no())
     gpx.reduce_points(min_distance=2.5)
     log.debug("Saving segment reduced points %d", gpx_segment.get_points_no())
-    segfile = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.gpx")
     with open(segfile, "w") as f:
         f.write(gpx.to_xml())
     gpx_segment.points.clear()
@@ -32,12 +31,12 @@ def saveCurrentSegment():
 # Process TPV
 def getPositionData(report):
     print(report)
-    
+
     mode = report['mode']
     if mode < 2:
         return
     log.debug("Mode = %d", mode)
-   
+
     point = gpxpy.gpx.GPXTrackPoint()
     point.latitude = float(report['lat'])
     point.longitude = float(report['lon'])
@@ -51,8 +50,9 @@ def getPositionData(report):
     log.debug("Current points %d", len(gpx_segment.points))
     current_time = datetime.now()
     if current_time - last_time >= MAX_SEGMENT_TIME:
+        segfile = current_time.strftime("%Y-%m-%dT%H:%M:%S.gpx")
         last_time = current_time
-        saveCurrentSegment()
+        saveCurrentSegment(segfile)
 
 log.info("Gps logger started")
 
@@ -74,11 +74,11 @@ try:
         elif report_class == "SKY":
             # Update the DOP data
             print(report)
-            
+
 except StopIteration:
     pass
-    
+
 except KeyboardInterrupt:
     saveCurrentSegment()
-    
+
 log.info("GPS logger terminated")
