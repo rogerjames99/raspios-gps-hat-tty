@@ -30,6 +30,7 @@ def saveCurrentSegment(segfile):
 
 # Process TPV
 def getPositionData(report):
+    global last_time
     print(report)
 
     mode = report['mode']
@@ -52,6 +53,7 @@ def getPositionData(report):
     if current_time - last_time >= MAX_SEGMENT_TIME:
         segfile = current_time.strftime("%Y-%m-%dT%H:%M:%S.gpx")
         last_time = current_time
+        log.debug("Saving segment %s", segfile)
         saveCurrentSegment(segfile)
 
 log.info("Gps logger started")
