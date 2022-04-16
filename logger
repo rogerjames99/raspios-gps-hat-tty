@@ -50,6 +50,7 @@ def getPositionData(report):
     # than the maximum segment size then save the current segment and reset it.
     log.debug("Current points %d", len(gpx_segment.points))
     current_time = datetime.now()
+    log.debug("current_time %s last_time %s", current_time.strftime(), last_time.strftime())
     if current_time - last_time >= MAX_SEGMENT_TIME:
         segfile = current_time.strftime("%Y-%m-%dT%H:%M:%S.gpx")
         last_time = current_time
@@ -81,6 +82,6 @@ except StopIteration:
     pass
 
 except KeyboardInterrupt:
-    saveCurrentSegment()
+    saveCurrentSegment(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.gpx"))
 
 log.info("GPS logger terminated")
